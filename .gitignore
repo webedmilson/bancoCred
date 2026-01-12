@@ -1,0 +1,18 @@
+# Arquivos de documentação pessoal/estudo
+EXPLICACOES_NESTJS.md
+
+# Dependências e Build
+node_modules
+dist
+build
+
+# Banco de Dados Local
+*.sqlite
+database.sqlite
+
+# Arquivos de Ambiente
+.env
+
+# Logs
+*.log
+npm-debug.log*
