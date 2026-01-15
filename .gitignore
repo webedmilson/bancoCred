@@ -16,3 +16,7 @@ database.sqlite
 # Logs
 *.log
 npm-debug.log*
+
+# Arquivos ignorados do repositório (mas mantidos localmente)
+insomnia_bancocred_v1.json
+COMO_RODAR.md

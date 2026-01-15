@@ -6,6 +6,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
+# Garantir permissão de execução para todos os binários
+RUN chmod +x node_modules/.bin/*
+
 COPY . .
 RUN npm run build
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import Logo from './Logo';
 
 export default function Login() {
@@ -22,7 +22,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/auth/login', formData);
+      const response = await api.post('/auth/login', formData);
       localStorage.setItem('access_token', response.data.access_token);
       navigate('/dashboard');
     } catch (error) {

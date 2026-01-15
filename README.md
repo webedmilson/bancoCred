@@ -105,7 +105,30 @@ O projeto é totalmente conteinerizado com Docker para facilitar o setup e garan
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Sobre o Autor
 
-Desenvolvido por **Edmilson** - Engenheiro de Software Full Stack.
-*Focado em soluções financeiras escaláveis e seguras.*
+**Desenvolvedor Backend Sênior** com 21 anos de experiência em sistemas críticos e alta escala.
+
+*   **Sólida carreira em PHP (desde 2003)**, com profunda vivência em regras de negócio complexas e estabilidade de sistemas.
+*   Há 12 anos responsável pelo desenvolvimento e manutenção de ERP completo, garantindo integridade contábil e continuidade operacional.
+*   Focado na união entre a solidez da experiência legada e a agilidade de tecnologias modernas (NestJS, React, Docker).
+
+Este projeto demonstra minha transição e capacidade de entrega end-to-end em stacks bancárias modernas (Node.js/TypeScript).
+
+### 🎓 Formação Acadêmica
+
+*   **MBA Executivo em Gestão de Marketing e Comunicação Integrada** (2018)
+*   **Tecnologia em Web Design** - Universidade Braz Cubas (2005)
+
+### 🛠️ Arsenal Técnico (Tech Stack)
+
+| Área | Tecnologias & Competências |
+| :--- | :--- |
+| **Backend** | **Node.js, NestJS, TypeScript** (Atual), **PHP** (21 Anos), Laravel, Clean Architecture, SOLID. |
+| **Database** | **PostgreSQL, TypeORM** (Atual), MySQL, Modelagem Relacional (ERD), Otimização SQL, ACID. |
+| **Frontend** | **React, Tailwind CSS** (Atual), JavaScript, jQuery, HTML5/CSS3, Design Responsivo. |
+| **DevOps** | **Docker, AWS Lambda** (Atual), Nginx, Linux Server, Git/GitHub, SSL/HTTPS, VPS. |
+| **IA & Inovação** | **OpenAI API**, ChatGPT Integration, Prompt Engineering applied to Business Logic. |
+| **Business** | **Sistemas Financeiros (Banking/ERP)**, Integrações (Omie/Asaas/Meta), CRM, BI. |
+
+

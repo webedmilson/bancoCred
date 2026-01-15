@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import Exchange from './Exchange';
@@ -47,7 +47,7 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('home');
-  const [showBalance, setShowBalance] = useState(true);
+  const [showBalance, setShowBalance] = useState(false);
 
   // Transfer Form State
   const [transferAmount, setTransferAmount] = useState('');
@@ -107,26 +107,18 @@ export default function Dashboard() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileLoading(true);
-    const token = localStorage.getItem('access_token');
 
     try {
       if (!user) return;
       
-      const { email, cpf, ...updateData } = profileForm; // Prevent updating email/cpf if restricted, though backend handles validation
+      const { email, cpf, ...updateData } = profileForm; 
       
-      // We can allow updating email if needed, but let's assume restricted for now or backend handles it.
-      // Actually, let's send everything that is allowed.
-      
-      await axios.patch(`http://localhost:3000/users/${user.id}`, profileForm, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.patch(`/users/${user.id}`, updateData);
 
       alert('Perfil atualizado com sucesso!');
       
       // Refresh user data
-      const userRes = await axios.get('http://localhost:3000/users/profile', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const userRes = await api.get('/users/profile');
       setUser(userRes.data);
 
     } catch (error: any) {
@@ -145,16 +137,13 @@ export default function Dashboard() {
     }
 
     setPasswordLoading(true);
-    const token = localStorage.getItem('access_token');
     
     try {
       if (!user) return;
       
-      await axios.patch(`http://localhost:3000/users/${user.id}/password`, {
+      await api.patch(`/users/${user.id}/password`, {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       alert('Senha alterada com sucesso!');
@@ -172,13 +161,11 @@ export default function Dashboard() {
     }
   };
 
-  // Filter Logic
   const filteredTransactions = transactions.filter(t => {
     const date = new Date(t.createdAt);
     const startDate = filterStartDate ? new Date(filterStartDate) : null;
     const endDate = filterEndDate ? new Date(filterEndDate) : null;
     
-    // Adjust end date to include the whole day
     if (endDate) {
       endDate.setHours(23, 59, 59, 999);
     }
@@ -190,17 +177,21 @@ export default function Dashboard() {
     return true;
   });
 
-  const fetchTransactions = async (token: string) => {
-    const transRes = await axios.get('http://localhost:3000/transactions', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const sortedFilteredTransactions = [...filteredTransactions].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const fetchTransactions = async () => {
+    const transRes = await api.get('/transactions');
     setTransactions(transRes.data);
   };
 
-  const fetchAccount = async (token: string) => {
-    const accountRes = await axios.get('http://localhost:3000/accounts', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  const fetchAccount = async () => {
+    const accountRes = await api.get('/accounts');
     if (accountRes.data.length > 0) {
       console.log('Account Data (Dashboard):', accountRes.data[0]);
       setAccount(accountRes.data[0]);
@@ -216,15 +207,11 @@ export default function Dashboard() {
 
     const fetchData = async () => {
       try {
-        const config = {
-          headers: { Authorization: `Bearer ${token}` }
-        };
-
-        const userRes = await axios.get('http://localhost:3000/users/profile', config);
+        const userRes = await api.get('/users/profile');
         setUser(userRes.data);
 
-        await fetchAccount(token);
-        await fetchTransactions(token);
+        await fetchAccount();
+        await fetchTransactions();
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -249,14 +236,12 @@ export default function Dashboard() {
     const token = localStorage.getItem('access_token');
     
     try {
-      await axios.post('http://localhost:3000/transactions', {
+      await api.post('/transactions', {
         amount: parseFloat(transferAmount),
         type: 'TRANSFER',
         sourceAccountId: account?.id,
         targetAccountId: parseInt(targetAccountId),
         description: 'Transferência via App'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       alert('Transferência realizada com sucesso!');
@@ -265,8 +250,8 @@ export default function Dashboard() {
       setActiveTab('home');
       // Refresh data
       if (token) {
-        await fetchAccount(token);
-        await fetchTransactions(token);
+        await fetchAccount();
+        await fetchTransactions();
       }
     } catch (error: any) {
       console.error(error);
@@ -369,6 +354,74 @@ export default function Dashboard() {
             </div>
         </div>
 
+        <div className="hidden md:flex items-center justify-between bg-white px-8 py-5 border-b border-gray-100">
+          <div>
+            <p className="text-sm font-semibold tracking-wide text-nubank-purple uppercase">Desenvolvido por</p>
+            <p className="text-2xl font-bold text-nubank-purple">Edmilson Rodrigues</p>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-sm font-semibold tracking-wide text-nubank-purple uppercase">Stack principal</span>
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Frontend com React">
+                <img
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg"
+                  alt="React"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">React</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Linguagem TypeScript">
+                <img
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg"
+                  alt="TypeScript"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">TypeScript</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Styling com Tailwind CSS">
+                <img
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg"
+                  alt="Tailwind"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">Tailwind</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Build Tool Vite">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Vitejs-logo.svg"
+                  alt="Vite"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">Vite</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Backend NestJS">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/a/a8/NestJS.svg"
+                  alt="NestJS"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">NestJS</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Banco de Dados PostgreSQL">
+                <img
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg"
+                  alt="PostgreSQL"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">PostgreSQL</span>
+              </div>
+              <div className="flex items-center gap-2.5 hover:scale-110 transition-transform duration-300 cursor-pointer" title="Container Docker">
+                <img
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg"
+                  alt="Docker"
+                  className="w-9 h-9"
+                />
+                <span className="text-base font-semibold text-gray-800">Docker</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           
@@ -391,21 +444,21 @@ export default function Dashboard() {
                 </div>
                 <div className="text-4xl font-bold text-gray-900 mb-6">
                     {showBalance ? (
-                        `R$ ${parseFloat(account?.balance || '0').toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                        `R$ ${Number(account?.balance ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                     ) : (
                         <span className="tracking-widest bg-gray-100 text-gray-400 rounded px-2 select-none">••••••</span>
                     )}
                 </div>
                 <div className="flex flex-col md:flex-row gap-4">
-                    <button onClick={() => setActiveTab('transfer')} className="flex-1 bg-nubank-purple text-white py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple-dark transition-colors flex items-center justify-center gap-2">
+                    <button onClick={() => setActiveTab('transfer')} className="flex-1 bg-nubank-purple text-white py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple-dark hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                         Transferir
                     </button>
-                    <button onClick={() => setActiveTab('exchange')} className="flex-1 bg-nubank-purple/10 text-nubank-purple py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple/20 transition-colors flex items-center justify-center gap-2">
+                    <button onClick={() => setActiveTab('exchange')} className="flex-1 bg-nubank-purple/10 text-nubank-purple py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                         Investir
                     </button>
-                    <button onClick={() => setActiveTab('statement')} className="flex-1 bg-nubank-purple/10 text-nubank-purple py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple/20 transition-colors flex items-center justify-center gap-2">
+                    <button onClick={() => setActiveTab('statement')} className="flex-1 bg-nubank-purple/10 text-nubank-purple py-3 px-4 rounded-xl font-semibold hover:bg-nubank-purple/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                         Ver Extrato
                     </button>
@@ -420,8 +473,8 @@ export default function Dashboard() {
                         <div className="p-8 text-center text-gray-500">Nenhuma movimentação recente.</div>
                     ) : (
                         <div className="divide-y divide-gray-100">
-                            {transactions.slice(0, 5).map(t => (
-                                <div key={t.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
+                            {sortedTransactions.slice(0, 5).map((t, index) => (
+                                <div key={t.id} className={`p-4 flex justify-between items-center hover:bg-gray-50 transition-colors ${index === 0 ? 'bg-purple-50/40' : ''}`}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                             t.type === 'DEPOSIT' ? 'bg-green-100 text-green-600' : 
@@ -437,13 +490,18 @@ export default function Dashboard() {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-gray-900">
-                                                {t.type === 'DEPOSIT' ? 'Depósito Recebido' : 
-                                                 t.type === 'WITHDRAW' ? 'Saque Realizado' : 
-                                                 t.type === 'EXCHANGE_BUY' ? 'Compra de Moeda' :
-                                                 t.type === 'EXCHANGE_SELL' ? 'Venda de Moeda' :
-                                                 t.targetAccount?.id === account?.id ? 'Transferência Recebida' : 'Transferência Enviada'}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-semibold text-gray-900">
+                                                    {t.type === 'DEPOSIT' ? 'Depósito Recebido' : 
+                                                     t.type === 'WITHDRAW' ? 'Saque Realizado' : 
+                                                     t.type === 'EXCHANGE_BUY' ? 'Compra de Moeda' :
+                                                     t.type === 'EXCHANGE_SELL' ? 'Venda de Moeda' :
+                                                     t.targetAccount?.id === account?.id ? 'Transferência Recebida' : 'Transferência Enviada'}
+                                                </p>
+                                                {index === 0 && (
+                                                    <span className="bg-nubank-purple text-white text-[10px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm animate-pulse">Novo</span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-gray-500">{new Date(t.createdAt).toLocaleDateString('pt-BR')} • {new Date(t.createdAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</p>
                                         </div>
                                     </div>
@@ -464,12 +522,9 @@ export default function Dashboard() {
           {activeTab === 'exchange' && account && (
             <div className="animate-fade-in">
               <Exchange 
-                onSuccess={() => {
-                  const token = localStorage.getItem('access_token');
-                  if (token) {
-                    fetchAccount(token);
-                    fetchTransactions(token);
-                  }
+                onSuccess={async () => {
+                  await fetchAccount();
+                  await fetchTransactions();
                 }}
                 balanceBrl={Number(account.balance ?? 0)}
                 balanceUsd={Number(account.balanceUsd ?? 0)}
@@ -605,7 +660,7 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {filteredTransactions.map(t => (
+                                {sortedFilteredTransactions.map(t => (
                                     <tr key={t.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 text-sm text-gray-600">
                                             {new Date(t.createdAt).toLocaleDateString('pt-BR')}
@@ -854,4 +909,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

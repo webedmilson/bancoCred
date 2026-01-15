@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { RefreshCw, DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
 
 interface ExchangeProps {
@@ -23,10 +23,7 @@ export default function Exchange({ onSuccess, balanceBrl, balanceUsd, balanceEur
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await axios.get('http://localhost:3000/exchange/rates', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/exchange/rates');
       setRates(response.data);
     } catch (error) {
       console.error('Erro ao buscar cotações', error);
@@ -48,12 +45,9 @@ export default function Exchange({ onSuccess, balanceBrl, balanceUsd, balanceEur
 
     setBuying(true);
     try {
-      const token = localStorage.getItem('access_token');
-      await axios.post('http://localhost:3000/exchange/buy', {
+      await api.post('/exchange/buy', {
         amountBrl: Number(amount),
         targetCurrency: currency
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       
       alert('Compra realizada com sucesso!');
