@@ -1,58 +1,95 @@
-# Guia de Deploy - BancoCred
+# Guia de Deploy - BancoCred (VPS + Domínio)
 
-Este guia descreve os passos para publicar a aplicação BancoCred em sua VPS.
+Este guia cobre desde a preparação da VPS até a configuração do domínio `bancocred.edmilsonrodrigues.com.br`.
 
-## 1. Instalação do Docker na VPS
+Como você já tem o `banctudo` rodando, precisamos ter cuidado para **não usar as mesmas portas** (80 e 3000) e causar conflito.
 
-Antes de tudo, conecte-se na sua VPS e instale o Docker, pois o erro `docker-compose not found` indica que ele não está instalado.
+---
 
-Rode este comando na VPS:
+## 1. Configuração Inicial na VPS (Faça uma vez)
+
+Acesse sua VPS via terminal (SSH) e siga os passos:
+
+### 1.1. Escolha a pasta
+Você mencionou criar uma pasta específica. Vamos usar `~/bancocred`.
 ```bash
-curl -fsSL https://get.docker.com | sh
+cd ~
+git clone https://github.com/SEU_USUARIO/bancocred.git
+cd bancocred
 ```
 
-Verifique se instalou corretamente:
-```bash
-docker compose version
-```
+### 1.2. Configure as Portas (IMPORTANTE)
+Como você já tem outro site rodando, as portas `80` e `3000` provavelmente estão ocupadas. Vamos usar `4000` (Front) e `4001` (Back).
 
-## 2. Enviar os Arquivos (Do seu computador)
-
-Use o script automático `deploy.ps1` que está na raiz do projeto (no seu Windows).
-Abra o PowerShell na pasta do projeto e rode:
-
-```powershell
-.\deploy.ps1
-```
-
-Isso vai criar a pasta `bancocred` na VPS e enviar todos os arquivos.
-
-## 3. Iniciar a Aplicação (Na VPS)
-
-Depois de enviar os arquivos, volte para o terminal da VPS:
-
-1. Entre na pasta:
-   ```bash
-   cd ~/bancocred
-   ```
-
-2. Crie o arquivo de configuração:
+1. Crie o arquivo `.env`:
    ```bash
    cp .env.prod.example .env
-   ```
-   *Se der erro de "No such file", é porque o passo 2 (Enviar Arquivos) não funcionou.*
-
-3. Edite as configurações (opcional, mas recomendado para mudar senhas):
-   ```bash
    nano .env
    ```
 
-4. Suba o sistema (use `docker compose` em vez de `docker-compose`):
-   ```bash
-   docker compose -f docker-compose.prod.yml up --build -d
+2. Adicione/Altere estas linhas no final do arquivo `.env`:
+   ```ini
+   # Portas para não conflitar com o Banctudo
+   APP_PORT=4000
+   API_PORT=4001
+   
+   # Configurações do Banco
+   POSTGRES_USER=seu_usuario_banco
+   POSTGRES_PASSWORD=sua_senha_secreta
+   POSTGRES_DB=bancocred_prod
+   JWT_SECRET=sua_chave_jwt_secreta
    ```
 
-### Solução de Problemas Comuns
+### 1.3. Suba o projeto manualmente pela primeira vez
+Para garantir que está tudo certo:
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+Se der erro de porta ("Address already in use"), troque as portas no `.env` para outros números (ex: 4002, 4003).
 
-- **Erro `docker-compose not found`**: O Docker não está instalado ou é uma versão antiga. Use o comando de instalação acima e depois use `docker compose` (com espaço).
-- **Erro `No such file or directory`**: Os arquivos não foram enviados. Rode o `deploy.ps1` novamente no seu computador local e fique atento a erros de senha/conexão.
+---
+
+## 2. Configurar o Domínio (Subdomínio)
+
+Agora precisamos fazer o `bancocred.edmilsonrodrigues.com.br` apontar para o Docker na porta `4000`.
+
+### Se você usa Nginx na VPS (Recomendado):
+1. Crie um arquivo de configuração para o site:
+   ```bash
+   sudo nano /etc/nginx/sites-available/bancocred
+   ```
+2. Cole o conteúdo do arquivo `nginx_vps_example.conf` que está na raiz deste projeto.
+   *(Certifique-se que as portas no arquivo batem com as do seu `.env`)*.
+
+3. Ative o site e reinicie o Nginx:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/bancocred /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+### Se você usa Apache/cPanel na VPS:
+Você precisará criar um **Proxy Reverso** no Apache ou através do painel do cPanel para redirecionar o tráfego do subdomínio para `http://localhost:4000`.
+
+---
+
+## 3. Automatizar com GitHub (O "Jeito FTP com Git")
+
+Agora que a VPS está pronta, vamos ativar o deploy automático. Sempre que você der `git push`, ele atualiza a VPS.
+
+### 3.1. Configure as Secrets no GitHub
+No seu repositório do GitHub, vá em **Settings > Secrets and variables > Actions** e adicione:
+
+- `VPS_HOST`: IP da sua VPS.
+- `VPS_USER`: Seu usuário (ex: `root`).
+- `VPS_SSH_KEY`: Sua chave privada SSH.
+
+### 3.2. Teste
+Faça uma alteração no código no seu computador, commite e envie:
+```bash
+git add .
+git commit -m "Configurando deploy automático"
+git push origin main
+```
+
+O GitHub Actions vai entrar na sua VPS, baixar o código novo e reiniciar os containers nas portas certas (`4000` e `4001`), sem derrubar o `banctudo`.
