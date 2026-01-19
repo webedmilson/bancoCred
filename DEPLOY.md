@@ -14,7 +14,7 @@ Acesse sua VPS via terminal (SSH) e siga os passos:
 Você mencionou criar uma pasta específica. Vamos usar `~/bancocred`.
 ```bash
 cd ~
-git clone https://github.com/SEU_USUARIO/bancocred.git
+git clone https://github.com/webedmilson/bancocred.git
 cd bancocred
 ```
 
@@ -85,11 +85,52 @@ No seu repositório do GitHub, vá em **Settings > Secrets and variables > Actio
 - `VPS_SSH_KEY`: Sua chave privada SSH.
 
 ### 3.2. Teste
-Faça uma alteração no código no seu computador, commite e envie:
-```bash
-git add .
-git commit -m "Configurando deploy automático"
-git push origin main
-```
+Faça uma alteração no código no seu computador, commite e envie.
 
-O GitHub Actions vai entrar na sua VPS, baixar o código novo e reiniciar os containers nas portas certas (`4000` e `4001`), sem derrubar o `banctudo`.
+---
+
+## 4. Como Atualizar o Projeto (Guia Rápido Git)
+
+Sempre que você fizer alterações no código e quiser enviar para a VPS (via GitHub), siga este ritual no seu terminal local:
+
+1. **Verificar o que mudou:**
+   ```bash
+   git status
+   ```
+   *(Isso mostra os arquivos modificados em vermelho)*
+
+2. **Adicionar todas as mudanças:**
+   ```bash
+   git add .
+   ```
+   *(Isso prepara todos os arquivos para o envio)*
+
+3. **Salvar a versão (Commit):**
+   ```bash
+   git commit -m "Descreva aqui o que você fez"
+   ```
+   *(Ex: `git commit -m "Arrumei a cor do botão"`. Use aspas sempre!)*
+
+4. **Enviar para o GitHub (e VPS):**
+   ```bash
+   git push origin main
+   ```
+   *(Isso envia o código para a nuvem. Se o Deploy Automático estiver configurado, a VPS atualiza sozinha. Se não, você precisa entrar na VPS e atualizar manualmente).*
+
+---
+
+## 5. Atualização Manual na VPS (Caso o Deploy Automático falhe)
+
+Se precisar atualizar "na mão":
+
+1. **Acesse a VPS:**
+   ```bash
+   ssh root@185.239.208.16
+   ```
+
+2. **Vá para a pasta e atualize:**
+   ```bash
+   cd ~/bancocred
+   git pull
+   docker compose -f docker-compose.prod.yml up -d --build
+   ```

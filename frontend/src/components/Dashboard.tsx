@@ -115,7 +115,7 @@ export default function Dashboard() {
       
       await api.patch(`/users/${user.id}`, updateData);
 
-      alert('Perfil atualizado com sucesso!');
+      alert('Perfil atualizado com sucesso!!');
       
       // Refresh user data
       const userRes = await api.get('/users/profile');
