@@ -1,12 +1,32 @@
 # 🏦 BancoCred - Digital Banking Core
 
+![Status](https://img.shields.io/badge/Status-Production-green)
 ![React](https://img.shields.io/badge/Frontend-React-blue?logo=react)
 ![NestJS](https://img.shields.io/badge/Backend-NestJS-red?logo=nestjs)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/DevOps-Docker-2496ED?logo=docker)
 ![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?logo=typescript)
 
+> **🚀 LIVE DEMO:** [bancocred.edmilsonrodrigues.com.br](http://bancocred.edmilsonrodrigues.com.br)
+
 O **BancoCred** é uma aplicação Full Stack de simulação bancária desenvolvida com foco em arquitetura escalável, segurança de dados e experiência do usuário. O projeto implementa funcionalidades críticas de um core bancário, como gestão de contas, transferências peer-to-peer (PIX) e operações de câmbio multi-moeda.
+
+---
+
+## 🏆 Destaques de Engenharia & Resiliência
+
+Além do CRUD básico, este projeto implementa padrões avançados de desenvolvimento de software para garantir robustez em produção:
+
+### 🛡️ Resiliência em Integrações (API Fallback)
+Para o sistema de Câmbio, implementei um mecanismo de **Alta Disponibilidade** na consulta de taxas:
+1.  **Primary:** Tenta buscar cotações na API principal (AwesomeAPI).
+2.  **Fallback Automático:** Se a API principal falhar (timeout ou rate limit), o sistema automaticamente chaveia para uma API secundária (ExchangeRate-API).
+3.  **Circuit Breaker (Simulado):** Se ambas falharem, o sistema opera em modo de contingência para não travar a experiência do usuário.
+
+### 🐳 DevOps & Deploy
+*   **VPS Linux:** Deploy realizado em servidor Linux real, não apenas localmente.
+*   **Docker Compose:** Orquestração completa (Frontend + Backend + Banco) garantindo paridade entre desenvolvimento e produção.
+*   **Automação:** Scripts de setup e deploy configurados para facilitar a manutenção.
 
 ---
 
@@ -60,9 +80,9 @@ Modelagem relacional robusta para garantir a consistência das transações fina
 
 ---
 
-## �️ Como Executar o Projeto
+## 💻 Como Executar o Projeto Localmente
 
-O projeto é totalmente conteinerizado com Docker para facilitar o setup e garantir paridade entre ambientes de desenvolvimento e produção.
+O projeto é totalmente conteinerizado com Docker para facilitar o setup.
 
 ### Pré-requisitos
 *   Docker e Docker Compose.
@@ -97,38 +117,3 @@ O projeto é totalmente conteinerizado com Docker para facilitar o setup e garan
 ---
 
 ## 🔮 Roadmap e Melhorias Futuras
-
-*   [ ] Implementação de Testes Unitários e de Integração (Jest).
-*   [ ] Pipeline de CI/CD (GitHub Actions).
-*   [ ] Arquitetura de Microsserviços para o módulo de Extrato.
-*   [ ] Autenticação de Dois Fatores (2FA).
-
----
-
-## 👨‍💻 Sobre o Autor
-
-**Desenvolvedor Backend Sênior** com 21 anos de experiência em sistemas críticos e alta escala.
-
-*   **Sólida carreira em PHP (desde 2003)**, com profunda vivência em regras de negócio complexas e estabilidade de sistemas.
-*   Há 12 anos responsável pelo desenvolvimento e manutenção de ERP completo, garantindo integridade contábil e continuidade operacional.
-*   Focado na união entre a solidez da experiência legada e a agilidade de tecnologias modernas (NestJS, React, Docker).
-
-Este projeto demonstra minha transição e capacidade de entrega end-to-end em stacks bancárias modernas (Node.js/TypeScript).
-
-### 🎓 Formação Acadêmica
-
-*   **MBA Executivo em Gestão de Marketing e Comunicação Integrada** (2018)
-*   **Tecnologia em Web Design** - Universidade Braz Cubas (2005)
-
-### 🛠️ Arsenal Técnico (Tech Stack)
-
-| Área | Tecnologias & Competências |
-| :--- | :--- |
-| **Backend** | **Node.js, NestJS, TypeScript** (Atual), **PHP** (21 Anos), Laravel, Clean Architecture, SOLID. |
-| **Database** | **PostgreSQL, TypeORM** (Atual), MySQL, Modelagem Relacional (ERD), Otimização SQL, ACID. |
-| **Frontend** | **React, Tailwind CSS** (Atual), JavaScript, jQuery, HTML5/CSS3, Design Responsivo. |
-| **DevOps** | **Docker, AWS Lambda** (Atual), Nginx, Linux Server, Git/GitHub, SSL/HTTPS, VPS. |
-| **IA & Inovação** | **OpenAI API**, ChatGPT Integration, Prompt Engineering applied to Business Logic. |
-| **Business** | **Sistemas Financeiros (Banking/ERP)**, Integrações (Omie/Asaas/Meta), CRM, BI. |
-
-
