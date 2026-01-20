@@ -558,6 +558,21 @@ export default function Dashboard() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Para qual conta?</label>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 flex items-start gap-3">
+                                <svg className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p className="text-sm text-blue-800 font-medium">
+                                        Dica para testes:
+                                    </p>
+                                    <p className="text-sm text-blue-600">
+                                        Transfira para a conta <span className="font-bold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded">00001</span> para simular uma operação.
+                                    </p>
+                                </div>
+                            </div>
+
                             <input 
                                 type="number" 
                                 required
