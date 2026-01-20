@@ -20,3 +20,19 @@ npm-debug.log*
 # Arquivos ignorados do repositório (mas mantidos localmente)
 insomnia_bancocred_v1.json
 COMO_RODAR.md
+
+# Arquivos Pessoais e Temporários (Removidos do Git)
+CURRICULO.md
+LINKEDIN_COPY.md
+ROTEIRO_VIDEO.md
+bancocred-deploy.tar.gz
+deploy.ps1
+COMO_INICIAR.md
+DEPLOY.md
+ROTEIRO_DEPLOY.md
+.env.example
+.env.prod.example
+nginx_vps_example.conf
+setup_vps.sh
+~
+
