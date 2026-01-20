@@ -117,3 +117,12 @@ O projeto é totalmente conteinerizado com Docker para facilitar o setup.
 ---
 
 ## 🔮 Roadmap e Melhorias Futuras
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvido com ❤️ por **Edmilson Rodrigues**.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/webedmilson)
+
