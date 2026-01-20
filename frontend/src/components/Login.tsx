@@ -75,6 +75,12 @@ export default function Login() {
           </button>
         </form>
 
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+            <p className="text-sm text-gray-600 font-medium mb-1">Conta Demo para Testes:</p>
+            <p className="text-sm text-nubank-purple font-bold">demo@bancocred.com</p>
+            <p className="text-sm text-gray-500">Senha: 123456</p>
+        </div>
+
         <div className="mt-8 text-center">
           <p className="text-gray-600">
             Não tem conta?{' '}

@@ -36,3 +36,5 @@ nginx_vps_example.conf
 setup_vps.sh
 ~
 
+# Local scripts
+setup_demo.sh
