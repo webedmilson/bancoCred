@@ -118,6 +118,20 @@ O projeto é totalmente conteinerizado com Docker para facilitar o setup.
 
 ## 🔮 Roadmap e Melhorias Futuras
 
+### Novas Features de Negócio
+*   **💰 Módulo de Empréstimos:** Simulação de parcelas com juros compostos e contratação direta pelo app.
+*   **📄 Comprovantes:** Geração automática e compartilhamento de comprovantes de transferência.
+*   **📢 Landing Page:** Página inicial institucional focada em marketing e conversão de leads.
+
+### Experiência do Usuário (UX)
+*   **👤 Identificação no PIX:** Exibição do nome do destinatário antes da confirmação da transferência.
+*   **✅ Confirmação de Segurança:** Etapa adicional solicitando a confirmação dos dados da transferência.
+*   **🤖 Assistente com IA:** Integração com Inteligência Artificial (LLM) para tirar dúvidas dos usuários sobre o sistema.
+
+### Segurança
+*   **🛡️ Verificação Humana:** Implementação de CAPTCHA/Turnstile no login para evitar bots.
+*   **📧 Recuperação de Senha:** Fluxo completo de "Esqueci minha senha" com envio de token seguro por e-mail.
+
 ---
 
 ## 👨‍💻 Autor
